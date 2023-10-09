@@ -7,9 +7,7 @@
 #include <iostream>
 #include <deque> 
 #include <mutex>
-
-
-
+#include <windows.h>
 
 class Player
 {
@@ -30,8 +28,8 @@ Player::Player()
 }
 Player::Player(int delayvar, double chancevar)
 {
-    this->delay = delayvar;
-    this->chance = chancevar;
+    this->delay = delayvar;  //determine how fast the contestant notice that the music stopped playing
+    this->chance = chancevar;//determine chance that the contestant has been in an advantageous placewhen music stoped
     inGame = true;
 }
 
@@ -41,6 +39,12 @@ std::mutex mutexChair;
 
 void got_chair(int contestantNR)
 {
+    Sleep(AllPlayer[contestantNR].delay);
+
+    while (rand()%10 >= AllPlayer[contestantNR].chance) //how difficult founding of empty chair is at this very moment
+    {
+        Sleep(10);
+    }
     mutexChair.lock();
     if (chairsLeft > 0)
     {
@@ -69,7 +73,7 @@ int main()
     int howManyPlayers = rand() % 10 + 5;
     while (AllPlayer.size() < howManyPlayers)
     {
-        Player TmpPlayer(rand() % 50, rand() % 9 * 0.1 + 0.05);
+        Player TmpPlayer(rand() % 50, rand() % 10 + 1);
         AllPlayer.push_back(TmpPlayer);
     }
 
@@ -102,7 +106,7 @@ int main()
             }
         }
     }
-    std::cout<< "The first place goes to contestant with properties: chance- " << AllPlayer[0].chance << "\tdelay- " << AllPlayer[0].delay;
+    std::cout<< "The first place goes to contestant with properties: chance- " << AllPlayer[0].chance << "\tdelay- " << AllPlayer[0].delay<<"\n\n\n\n";
     AllPlayer.clear();
 
     return 1;
